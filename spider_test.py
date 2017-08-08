@@ -4,14 +4,11 @@ import threading # multi-threading process
 from bs4 import BeautifulSoup
 #from lxml import etree 
 from selenium import webdriver
-  
-def start_roomnum_collecting(category_html): # 这个函数是使用threading包进行多线程扒取的
-    threads = []
-    for item in category_html:
-        th = threading.Thread(target=get_roomnum, args=(item, )) # get_roomnum是上面的一个函数,item是函数的一个参数
-        th.start() # 多线程爬虫开始了！好兴奋！
-        threads.append(th)
  
+
+#inspired by http://anchengdeng.com/2017/07/22/bespiderman/
+
+
 def grab_nxt(driver):
     next_page = driver.find_element_by_class_name("nxt").get_attribute("href")
     return next_page
