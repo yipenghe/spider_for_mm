@@ -30,13 +30,19 @@ def get_comments(page):
     request = requests.get(url=page, headers=headers)
     response = request.text
     soup = BeautifulSoup(response, "lxml")
-    comments = soup.find_all("div", class_ = "re_content")
-    quotes = soup.find_all("div", class_ = "quotes")
+    comments = soup.select("[class~=re_content]")
+    floors = soup.select("[class~=floor]")
+    count = 0
     for comment in comments:
-        if comment.find("div", class_ = "quote") is not None:
-            print str(" ").join(comment.text.split()[4:])
+        if 'quote' in str(comment): #ignore the qutoe part of repost
+            cmt = str(comment).split("</div>")[-2]
         else:
-            print comment.text
+            cmt =  comment.text
+        print "floor ",
+        print floors[count].text,
+        print ":   ",
+        print cmt
+        count += 1
     return grab_nxt_bs(soup, page)
 
 def get_threads(driver):
@@ -49,22 +55,19 @@ def get_threads(driver):
                 visited.add(next_page)
                 while next_page is not None:
                     next_page = get_comments(next_page)
-                break
 
-def main(): # 主函数，如果未来虎牙更换了网址而网页结构没有改变，直接修改start_url就好了
+def main(): 
     start_url = "http://q.mama.cn/group/1/"
     driver = webdriver.PhantomJS()
     driver.get("http://q.mama.cn/group/1/")
-    for i in range(1):
+    for i in range(10):
+        print "=================================="
         print "getting page " + str(i+1) + "..."
+        print "=================================="
         next_page = grab_nxt(driver)
         get_threads(driver)
         driver.get(next_page)
+        print "finished page" + str(i+1)
     driver.quit()
-
-
-    
-    #for link in links:
-    #    print link.get_attribute("text")
 
 main()
